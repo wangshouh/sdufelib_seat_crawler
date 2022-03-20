@@ -3,6 +3,9 @@ import json
 from datetime import datetime
 
 def load_config(now_day):
+    '''
+    读取配置文件
+    '''
     with open('config.txt', 'r') as f:
         config = json.loads(f.read())
 
@@ -11,30 +14,39 @@ def load_config(now_day):
     return complete_url, order_id
 
 def get_timeid_list(complete_url, order_id, s):
-        headers = {
-            'Referer': complete_url
-        }
+    '''
+    获取时间id列表
+    '''
+    headers = {
+        'Referer': complete_url
+    }
 
-        book_info_api = "http://libst.sdufe.edu.cn/api.php/v3areas/" + order_id
-        bookTimeId_list = []
-        for i in s.get(book_info_api, headers=headers).json()['data']['list']['childArea']:
-            bookTimeId_list.append(
-                {
-                    'name': i['name'],
-                    'book_time_id': i['area_times']['data']['list'][0]['id'],
-                    'id': i['id']
-                }
-            )
+    book_info_api = "http://libst.sdufe.edu.cn/api.php/v3areas/" + order_id
+    bookTimeId_list = []
+    for i in s.get(book_info_api, headers=headers).json()['data']['list']['childArea']:
+        bookTimeId_list.append(
+            {
+                'name': i['name'],
+                'book_time_id': i['area_times']['data']['list'][0]['id'],
+                'id': i['id']
+            }
+        )
 
-        return bookTimeId_list
+    return bookTimeId_list
 
 def get_url_list(timeid_list, now_day, now_time):
+    '''
+    获取url列表
+    '''
     for i in timeid_list:
         i['referer_url'] = "http://libst.sdufe.edu.cn/web/seat3?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
         i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
     return timeid_list
 
 def get_seat_info(url_list, s):
+    '''
+    获取座位信息
+    '''
     available_seat_list = []
     for i in url_list:
         headers = {
