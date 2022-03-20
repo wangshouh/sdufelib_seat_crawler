@@ -28,11 +28,24 @@ def get_timeid_list(complete_url, order_id, s):
 
         return bookTimeId_list
 
-def get_referer_url_list(timeid_list, now_day, now_time):
+def get_url_list(timeid_list, now_day, now_time):
     for i in timeid_list:
         i['referer_url'] = "http://libst.sdufe.edu.cn/web/seat3?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
-
+        i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
     return timeid_list
+
+def get_seat_info(url_list, s):
+    available_seat_list = []
+    for i in url_list:
+        headers = {
+            'Referer': i['referer_url']
+        }
+        seat_list = s.get(i['api_url'], headers=headers).json()['data']['list']
+        i['available_seat'] = []
+        for seat_info in seat_list:
+            if seat_info['status'] == 1:
+                i['available_seat'].append(seat_info['no'])
+    return url_list
 
 now_day = datetime.now().strftime('%Y-%m-%d')
 now_time = datetime.now().strftime('%H:%M')
@@ -40,5 +53,6 @@ complete_url, order_id = load_config(now_day)
 
 s = requests.session()
 timeid_list = get_timeid_list(complete_url, order_id, s)
-referer_url_list = get_referer_url_list(timeid_list, now_day, now_time)
-print(referer_url_list)
+url_list = get_url_list(timeid_list, now_day, now_time)
+seat_info = get_seat_info(url_list, s)
+print(seat_info)
