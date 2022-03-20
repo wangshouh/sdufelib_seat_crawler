@@ -2,17 +2,16 @@ import requests
 import json
 from datetime import datetime
 
-def load_config():
+def load_config(now_day):
     with open('config.txt', 'r') as f:
         config = json.loads(f.read())
 
-    complete_url = config['prefix_url'] + datetime.now().strftime('%Y-%m-%d')
+    complete_url = config['prefix_url'] + now_day
     order_id = config['order_id']
     return complete_url, order_id
 
 def get_timeid_list(complete_url, order_id, s):
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36',
             'Referer': complete_url
         }
 
@@ -22,12 +21,19 @@ def get_timeid_list(complete_url, order_id, s):
             bookTimeId_list.append(
                 {
                     'name': i['name'],
-                    'id': i['area_times']['data']['list'][0]['id']
+                    'book_time_id': i['area_times']['data']['list'][0]['id'],
+                    'id': i['id']
                 }
             )
 
         return bookTimeId_list
 
+def get_referer_url_list(complete_url, order_id, s):
+    for i in timeid_list:
+        i['referer_url'] = "http://libst.sdufe.edu.cn/web/seat3?area={}&segment={}&day={}}&startTime={}&endTime=22:00"
+
+
+now_day = datetime.now().strftime('%Y-%m-%d')
 complete_url, order_id = load_config()
 s = requests.session()
 timeid_list = get_timeid_list(complete_url, order_id, s)
