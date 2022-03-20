@@ -8,8 +8,7 @@
 
 ### Additional information
 
-1. If you are in China, you can use [TUNA pypi mirror](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/) to install `requests`.
-
+1. If you are in China, you can use [TUNA pypi mirror](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/) to install `requests`. The command is `pip install -i https://pypi.tuna.tsinghua.edu.cn/simple requests`.
 1. Now, the crawler config only support Shengjing(圣井) campus.
 
 1. If you in other campus, you can read source code and modify it.
