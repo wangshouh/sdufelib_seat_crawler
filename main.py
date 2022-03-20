@@ -45,7 +45,13 @@ def get_seat_info(url_list, s):
         for seat_info in seat_list:
             if seat_info['status'] == 1:
                 i['available_seat'].append(seat_info['no'])
-    return url_list
+        available_seat_list.append(
+            {
+                'name': i['name'],
+                'available_seat': i['available_seat']
+            }
+        )
+    return available_seat_list
 
 now_day = datetime.now().strftime('%Y-%m-%d')
 now_time = datetime.now().strftime('%H:%M')
@@ -54,5 +60,5 @@ complete_url, order_id = load_config(now_day)
 s = requests.session()
 timeid_list = get_timeid_list(complete_url, order_id, s)
 url_list = get_url_list(timeid_list, now_day, now_time)
-seat_info = get_seat_info(url_list, s)
-print(seat_info)
+available_seat_list = get_seat_info(url_list, s)
+print(available_seat_list)
