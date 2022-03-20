@@ -45,12 +45,10 @@ def get_seat_info(url_list, s):
         for seat_info in seat_list:
             if seat_info['status'] == 1:
                 i['available_seat'].append(seat_info['no'])
-        available_seat_list.append(
-            {
-                'name': i['name'],
-                'available_seat': i['available_seat']
-            }
-        )
+        for j in i['available_seat']:
+            available_seat_list.append(
+                '{}-{}'.format(i['name'], j)
+            )
     return available_seat_list
 
 now_day = datetime.now().strftime('%Y-%m-%d')
