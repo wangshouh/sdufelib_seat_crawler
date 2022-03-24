@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
-
+import re
 
 def get_ticker(s):
     """
@@ -31,4 +31,20 @@ def do_login(s, username, password, lt):
     else:
         print('登录失败')
 
+def get_token(s):
+    """
+    获取token
+    """
+    url = 'http://libst.sdufe.edu.cn/home/web/f_second'
+    resp = s.get(url)
+    token = re.findall('''(?<='access_token':\").*(?=")''', resp.text)[0]
+    return token
 
+
+username = 
+password = 
+
+s = requests.Session()
+lt = get_ticker(s)
+do_login(s, username, password, lt)
+print(get_token(s))
