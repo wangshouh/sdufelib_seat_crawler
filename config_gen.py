@@ -8,5 +8,5 @@ info_dict = {
     'prefix_url': 'http://libst.sdufe.edu.cn/web/seat2/area/{}/day/'.format(order_id),
     'order_id': order_id
 }
-with open('config.txt', 'w') as f:
+with open('config.json', 'w') as f:
     f.write(json.dumps(info_dict))

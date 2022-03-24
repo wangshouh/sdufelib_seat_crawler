@@ -6,7 +6,7 @@ def load_config(now_day):
     '''
     读取配置文件
     '''
-    with open('config.txt', 'r') as f:
+    with open('config.json', 'r') as f:
         config = json.loads(f.read())
 
     complete_url = config['prefix_url'] + now_day
