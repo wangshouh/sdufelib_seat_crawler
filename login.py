@@ -41,10 +41,11 @@ def get_token(s):
     return token
 
 
-username = 
-password = 
-
-s = requests.Session()
-lt = get_ticker(s)
-do_login(s, username, password, lt)
-print(get_token(s))
+def login_token(s, username, password):
+    """
+    登入系统
+    """
+    lt = get_ticker(s)
+    do_login(s, username, password, lt)
+    token = get_token(s)
+    return token
