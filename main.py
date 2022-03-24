@@ -9,9 +9,10 @@ def load_config(now_day):
     with open('config.json', 'r') as f:
         config = json.loads(f.read())
 
-    complete_url = config['prefix_url'] + now_day
-    order_id = config['order_id']
-    return complete_url, order_id
+
+    for i in config:
+        i['complete_url'] = i['prefix_url'] + now_day
+    return config
 
 def get_timeid_list(complete_url, order_id, s):
     '''
@@ -65,10 +66,15 @@ def get_seat_info(url_list, s):
 
 now_day = datetime.now().strftime('%Y-%m-%d')
 now_time = datetime.now().strftime('%H:%M')
-complete_url, order_id = load_config(now_day)
+config = load_config(now_day)
+available_seat_all = []
 
 s = requests.session()
-timeid_list = get_timeid_list(complete_url, order_id, s)
-url_list = get_url_list(timeid_list, now_day, now_time)
-available_seat_list = get_seat_info(url_list, s)
-print(available_seat_list)
+for i in config:
+    complete_url = i['complete_url']
+    order_id = i['order_id']
+    timeid_list = get_timeid_list(complete_url, order_id, s)
+    url_list = get_url_list(timeid_list, now_day, now_time)
+    available_seat_list = get_seat_info(url_list, s)
+    available_seat_all.append(available_seat_list)
+print(available_seat_all)
