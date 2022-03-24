@@ -108,7 +108,7 @@ def book_seat(userid, segment, token, referer_url, order_id, s):
     }
     r = s.post('http://libst.sdufe.edu.cn/api.php/spaces/{}/book'.format(order_id),
                headers=headers, data=data)
-    print(r.json())
+    print(r.json()['msg'])
 
 
 now_day = datetime.now().strftime('%Y-%m-%d')
@@ -125,3 +125,10 @@ for i in config:
     available_seat_list = get_available_seat(url_dict, s)
     available_seat_all.append(available_seat_list)
 output_optimize(available_seat_all)
+
+order_id = input('请输入您预约的id: ')
+segment = input('请输入您预约的segment: ')
+referer_url = input('请输入您预约的referer_url: ')
+userid = input('请输入您的学号: ')
+token = login_token(s, userid= , password=)
+book_seat(userid, segment, token, referer_url, order_id, s)
