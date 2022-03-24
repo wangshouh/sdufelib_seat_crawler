@@ -58,11 +58,15 @@ def get_available_seat(url_dict, s):
         i['available_seat'] = []
         for seat_info in seat_list:
             if seat_info['status'] == 1:
-                i['available_seat'].append(seat_info['no'])
-        print(i['available_seat'])
+                i['available_seat'].append(
+                    {
+                        'seat_id': seat_info['id'],
+                        'seat_no': seat_info['no'],
+                    }
+                )
         for j in i['available_seat']:
             available_seat_list.append(
-                '{}-{}'.format(i['name'], j)
+                '{}-{}'.format(i['name'], j['seat_no'])
             )
     return available_seat_list
 
