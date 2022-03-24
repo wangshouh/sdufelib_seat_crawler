@@ -36,7 +36,7 @@ def get_timeid_list(complete_url, order_id, s):
 
     return bookTimeId_list
 
-def get_url_list(timeid_list, now_day, now_time):
+def get_url_dict(timeid_list, now_day, now_time):
     '''
     获取url列表
     '''
@@ -45,12 +45,12 @@ def get_url_list(timeid_list, now_day, now_time):
         i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
     return timeid_list
 
-def get_available_seat(url_list, s):
+def get_available_seat(url_dict, s):
     '''
-    获取座位信息
+    获取可用座位信息
     '''
     available_seat_list = []
-    for i in url_list:
+    for i in url_dict:
         headers = {
             'Referer': i['referer_url']
         }
@@ -59,6 +59,7 @@ def get_available_seat(url_list, s):
         for seat_info in seat_list:
             if seat_info['status'] == 1:
                 i['available_seat'].append(seat_info['no'])
+        print(i['available_seat'])
         for j in i['available_seat']:
             available_seat_list.append(
                 '{}-{}'.format(i['name'], j)
@@ -75,7 +76,7 @@ for i in config:
     complete_url = i['complete_url']
     order_id = i['order_id']
     timeid_list = get_timeid_list(complete_url, order_id, s)
-    url_list = get_url_list(timeid_list, now_day, now_time)
-    available_seat_list = get_available_seat(url_list, s)
+    url_dict = get_url_dict(timeid_list, now_day, now_time)
+    available_seat_list = get_available_seat(url_dict, s)
     available_seat_all.append(available_seat_list)
 print(available_seat_all)
