@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 from login import login_token
 
+
 def load_config(now_day):
     '''
     读取配置文件
@@ -10,10 +11,10 @@ def load_config(now_day):
     with open('config.json', 'r') as f:
         config = json.loads(f.read())
 
-
     for i in config:
         i['complete_url'] = i['prefix_url'] + now_day
     return config
+
 
 def get_timeid_list(complete_url, order_id, s):
     '''
@@ -36,14 +37,18 @@ def get_timeid_list(complete_url, order_id, s):
 
     return bookTimeId_list
 
+
 def get_url_dict(timeid_list, now_day, now_time):
     '''
     获取url列表
     '''
     for i in timeid_list:
-        i['referer_url'] = "http://libst.sdufe.edu.cn/web/seat3?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
-        i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
+        i['referer_url'] = "http://libst.sdufe.edu.cn/web/seat3?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
+            i['id'], i['book_time_id'], now_day, now_time)
+        i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
+            i['id'], i['book_time_id'], now_day, now_time)
     return timeid_list
+
 
 def get_available_seat(url_dict, s):
     '''
@@ -69,22 +74,41 @@ def get_available_seat(url_dict, s):
 
     return url_dict
 
+
 def output_optimize(available_seat_all):
     '''
     输出座位
     '''
-    print('name\t\t\tid\tsegment')
+    print('name\t\t\tid\tsegment\treferer_url')
     for floor in available_seat_all:
         for segment in floor:
             if segment['available_seat'] != []:
                 for seat in segment['available_seat']:
                     print(
-                        seat['seat_name'], '\t', 
-                        seat['seat_id'], '\t', 
-                        seat['segment']
-                        )
+                        seat['seat_name'], '\t',
+                        seat['seat_id'], '\t',
+                        seat['segment'],
+                        segment['referer_url']
+                    )
 
-    
+
+def book_seat(userid, segment, token, referer_url, order_id, s):
+    '''
+    预约座位
+    '''
+    headers = {
+        'Referer': referer_url
+    }
+    data = {
+        'access_token': token,
+        'user_id': userid,
+        'segment': segment,
+        'type': '1',
+        'operateChannel': '2'
+    }
+    r = s.post('http://libst.sdufe.edu.cn/api.php/spaces/{}/book'.format(order_id),
+               headers=headers, data=data)
+    print(r.json())
 
 
 now_day = datetime.now().strftime('%Y-%m-%d')
