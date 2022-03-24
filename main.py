@@ -1,6 +1,7 @@
 import requests
 import json
 from datetime import datetime
+from login import login_token
 
 def load_config(now_day):
     '''
@@ -44,7 +45,7 @@ def get_url_list(timeid_list, now_day, now_time):
         i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(i['id'], i['book_time_id'], now_day, now_time)
     return timeid_list
 
-def get_seat_info(url_list, s):
+def get_available_seat(url_list, s):
     '''
     获取座位信息
     '''
@@ -75,6 +76,6 @@ for i in config:
     order_id = i['order_id']
     timeid_list = get_timeid_list(complete_url, order_id, s)
     url_list = get_url_list(timeid_list, now_day, now_time)
-    available_seat_list = get_seat_info(url_list, s)
+    available_seat_list = get_available_seat(url_list, s)
     available_seat_all.append(available_seat_list)
 print(available_seat_all)
