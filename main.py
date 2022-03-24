@@ -62,13 +62,30 @@ def get_available_seat(url_dict, s):
                     {
                         'seat_id': seat_info['id'],
                         'seat_no': seat_info['no'],
+                        'segment': i['book_time_id'],
+                        'seat_name': i['name'] + '-' + seat_info['no']
                     }
                 )
-        for j in i['available_seat']:
-            available_seat_list.append(
-                '{}-{}'.format(i['name'], j['seat_no'])
-            )
-    return available_seat_list
+
+    return url_dict
+
+def output_optimize(available_seat_all):
+    '''
+    输出座位
+    '''
+    print('name\t\t\tid\tsegment')
+    for floor in available_seat_all:
+        for segment in floor:
+            if segment['available_seat'] != []:
+                for seat in segment['available_seat']:
+                    print(
+                        seat['seat_name'], '\t', 
+                        seat['seat_id'], '\t', 
+                        seat['segment']
+                        )
+
+    
+
 
 now_day = datetime.now().strftime('%Y-%m-%d')
 now_time = datetime.now().strftime('%H:%M')
@@ -83,4 +100,4 @@ for i in config:
     url_dict = get_url_dict(timeid_list, now_day, now_time)
     available_seat_list = get_available_seat(url_dict, s)
     available_seat_all.append(available_seat_list)
-print(available_seat_all)
+output_optimize(available_seat_all)
