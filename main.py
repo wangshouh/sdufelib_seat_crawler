@@ -38,17 +38,18 @@ def get_timeid_list(complete_url, order_id, s):
     return bookTimeId_list
 
 
-def get_url_dict(timeid_list, now_day, now_time):
+def get_api_url(timeid_list, now_day, now_time):
     '''
     获取url列表
     '''
+    api_url_list = []
     for i in timeid_list:
-        i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
-            i['id'], i['book_time_id'], now_day, now_time)
-    return timeid_list
+        api_url_list.append("http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
+            i['id'], i['book_time_id'], now_day, now_time))
+    return api_url_list
 
 
-def get_available_seat(url_dict, s):
+def get_available_seat(api_url, resp):
     '''
     获取可用座位信息
     '''
@@ -113,20 +114,23 @@ now_day = datetime.now().strftime('%Y-%m-%d')
 now_time = datetime.now().strftime('%H:%M')
 config = load_config(now_day)
 available_seat_all = []
-
+api_list = []
 s = requests.session()
 for i in config:
     complete_url = i['complete_url']
     order_id = i['order_id']
     timeid_list = get_timeid_list(complete_url, order_id, s)
-    url_dict = get_url_dict(timeid_list, now_day, now_time)
-    available_seat_list = get_available_seat(url_dict, s)
-    available_seat_all.append(available_seat_list)
-output_optimize(available_seat_all)
+    api_url_list = get_api_url(timeid_list, now_day, now_time)
+    api_list += api_url_list
 
-order_id = input('请输入您预约的id: ')
-segment = input('请输入您预约的segment: ')
-referer_url = input('请输入您预约的referer_url: ')
-userid = input('请输入您的学号: ')
-token = login_token(s, userid='202003140805' , password='300415')
-book_seat(userid, segment, token, referer_url, order_id, s)
+print(api_list)
+#     available_seat_list = get_available_seat(url_dict, s)
+#     available_seat_all.append(available_seat_list)
+# output_optimize(available_seat_all)
+
+# order_id = input('请输入您预约的id: ')
+# segment = input('请输入您预约的segment: ')
+# referer_url = input('请输入您预约的referer_url: ')
+# userid = input('请输入您的学号: ')
+# token = login_token(s, userid='202003140805' , password='300415')
+# book_seat(userid, segment, token, referer_url, order_id, s)
