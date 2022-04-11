@@ -43,8 +43,6 @@ def get_url_dict(timeid_list, now_day, now_time):
     获取url列表
     '''
     for i in timeid_list:
-        i['referer_url'] = "http://libst.sdufe.edu.cn/web/seat3?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
-            i['id'], i['book_time_id'], now_day, now_time)
         i['api_url'] = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
             i['id'], i['book_time_id'], now_day, now_time)
     return timeid_list
@@ -57,7 +55,7 @@ def get_available_seat(url_dict, s):
     available_seat_list = []
     for i in url_dict:
         headers = {
-            'Referer': i['referer_url']
+            'Referer': "test"
         }
         seat_list = s.get(i['api_url'], headers=headers).json()['data']['list']
         i['available_seat'] = []
@@ -130,5 +128,5 @@ order_id = input('请输入您预约的id: ')
 segment = input('请输入您预约的segment: ')
 referer_url = input('请输入您预约的referer_url: ')
 userid = input('请输入您的学号: ')
-token = login_token(s, userid= , password=)
+token = login_token(s, userid='202003140805' , password='300415')
 book_seat(userid, segment, token, referer_url, order_id, s)
