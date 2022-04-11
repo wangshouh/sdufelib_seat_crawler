@@ -1,19 +1,29 @@
-import requests
+import asyncio
 import json
 from datetime import datetime
+
+import aiohttp
+import requests
+
 from login import login_token
 
 
-def load_config(now_day):
-    '''
-    读取配置文件
-    '''
-    with open('config.json', 'r') as f:
-        config = json.loads(f.read())
+async def get_api_list(order_id):
+    async with aiohttp.ClientSession() as session:
+        complete_url = "http://libst.sdufe.edu.cn/api.php/v3areas/" + order_id
+        async with session.get(complete_url, headers={"Referer": "test"}) as resp:
+            content = await resp.json()
+            area_data = content['data']['list']['childArea']
+            all_data = []
+            for i in area_data:
+                need_data = {
+                    'name': i['name'],
+                    'book_time_id': i['area_times']['data']['list'][0]['id'],
+                    'id': i['id']
+                }
+                all_data.append(need_data)
+        return all_data
 
-    for i in config:
-        i['complete_url'] = i['prefix_url'] + now_day
-    return config
 
 
 def get_timeid_list(complete_url, order_id, s):
@@ -49,7 +59,7 @@ def get_api_url(timeid_list, now_day, now_time):
     return api_url_list
 
 
-def get_available_seat(api_url, resp):
+def get_available_seat(resp):
     '''
     获取可用座位信息
     '''
@@ -68,6 +78,13 @@ def get_available_seat(api_url, resp):
 
     return available_seat_list
 
+
+async def get_api_content(api_url, available_seat_all):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(api_url, headers={"Referer":"test"}) as resp:
+            api_content = await resp.json()
+            available_seat = get_available_seat(api_content)
+            return available_seat
 
 def output_optimize(available_seat_all):
     '''
@@ -117,8 +134,12 @@ for i in config:
     timeid_list = get_timeid_list(complete_url, order_id, s)
     api_url_list = get_api_url(timeid_list, now_day, now_time)
     api_list += api_url_list
-
+print("api list爬取完成")
 print(api_list)
+# loop = asyncio.get_event_loop()
+# tasks = [get_api_content(url) for url in api_list]
+# available_seat_all = loop.run_until_complete(asyncio.gather(*tasks))
+# print(available_seat_all)
 #     available_seat_list = get_available_seat(url_dict, s)
 #     available_seat_all.append(available_seat_list)
 # output_optimize(available_seat_all)
