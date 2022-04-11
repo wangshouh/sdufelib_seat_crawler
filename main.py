@@ -34,6 +34,19 @@ def get_all_api():
     return time_id_list
 
 
+def get_url_list():
+    now_day = datetime.now().strftime('%Y-%m-%d')
+    now_time = datetime.now().strftime('%H:%M')
+    api_list = get_all_api()
+    api_url_list = []
+    for floor in api_list:
+        for area in floor:
+            api_url = "http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
+                area['id'], area['book_time_id'], now_day, now_time)
+            api_url_list.append((api_url, area['book_time_id'],))
+    return api_url_list
+
+
 def get_available_seat(resp):
     '''
     获取可用座位信息
@@ -56,10 +69,11 @@ def get_available_seat(resp):
 
 async def get_api_content(api_url, available_seat_all):
     async with aiohttp.ClientSession() as session:
-        async with session.get(api_url, headers={"Referer":"test"}) as resp:
+        async with session.get(api_url, headers={"Referer": "test"}) as resp:
             api_content = await resp.json()
             available_seat = get_available_seat(api_content)
             return available_seat
+
 
 def output_optimize(available_seat_all):
     '''
