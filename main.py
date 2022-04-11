@@ -67,11 +67,11 @@ def get_available_seat(resp, segament):
     return available_seat_list
 
 
-async def get_api_content(api_url, available_seat_all):
+async def get_api_content(api_url, segament):
     async with aiohttp.ClientSession() as session:
         async with session.get(api_url, headers={"Referer": "test"}) as resp:
             api_content = await resp.json()
-            available_seat = get_available_seat(api_content)
+            available_seat = get_available_seat(api_content, segament)
             return available_seat
 
 
