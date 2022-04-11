@@ -47,7 +47,7 @@ def get_url_list():
     return api_url_list
 
 
-def get_available_seat(resp):
+def get_available_seat(resp, segament):
     '''
     获取可用座位信息
     '''
@@ -59,8 +59,8 @@ def get_available_seat(resp):
                 {
                     'seat_id': seat_info['id'],
                     'seat_no': seat_info['no'],
-                    'segment': i['book_time_id'],
-                    'seat_name': i['name'] + '-' + seat_info['no']
+                    'segment': segament,
+                    'seat_name': seat_info['area_name'] + '-' + seat_info['no']
                 }
             )
 
