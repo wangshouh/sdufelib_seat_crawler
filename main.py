@@ -54,24 +54,19 @@ def get_available_seat(api_url, resp):
     获取可用座位信息
     '''
     available_seat_list = []
-    for i in url_dict:
-        headers = {
-            'Referer': "test"
-        }
-        seat_list = s.get(i['api_url'], headers=headers).json()['data']['list']
-        i['available_seat'] = []
-        for seat_info in seat_list:
-            if seat_info['status'] == 1:
-                i['available_seat'].append(
-                    {
-                        'seat_id': seat_info['id'],
-                        'seat_no': seat_info['no'],
-                        'segment': i['book_time_id'],
-                        'seat_name': i['name'] + '-' + seat_info['no']
-                    }
-                )
+    seat_list = resp['data']['list']
+    for seat_info in seat_list:
+        if seat_info['status'] == 1:
+            available_seat_list.append(
+                {
+                    'seat_id': seat_info['id'],
+                    'seat_no': seat_info['no'],
+                    'segment': i['book_time_id'],
+                    'seat_name': i['name'] + '-' + seat_info['no']
+                }
+            )
 
-    return url_dict
+    return available_seat_list
 
 
 def output_optimize(available_seat_all):
