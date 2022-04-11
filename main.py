@@ -25,38 +25,13 @@ async def get_api_list(order_id):
         return all_data
 
 
-
-def get_timeid_list(complete_url, order_id, s):
-    '''
-    获取时间id列表
-    '''
-    headers = {
-        'Referer': complete_url
-    }
-
-    book_info_api = "http://libst.sdufe.edu.cn/api.php/v3areas/" + order_id
-    bookTimeId_list = []
-    for i in s.get(book_info_api, headers=headers).json()['data']['list']['childArea']:
-        bookTimeId_list.append(
-            {
-                'name': i['name'],
-                'book_time_id': i['area_times']['data']['list'][0]['id'],
-                'id': i['id']
-            }
-        )
-
-    return bookTimeId_list
-
-
-def get_api_url(timeid_list, now_day, now_time):
-    '''
-    获取url列表
-    '''
-    api_url_list = []
-    for i in timeid_list:
-        api_url_list.append("http://libst.sdufe.edu.cn/api.php/spaces_old?area={}&segment={}&day={}&startTime={}&endTime=22:00".format(
-            i['id'], i['book_time_id'], now_day, now_time))
-    return api_url_list
+def get_all_api():
+    with open("config.json", 'r') as f:
+        order_id_list = json.load(f)
+    loop = asyncio.get_event_loop()
+    tasks = [get_api_list(order_id) for order_id in order_id_list]
+    time_id_list = loop.run_until_complete(asyncio.gather(*tasks))
+    return time_id_list
 
 
 def get_available_seat(resp):
