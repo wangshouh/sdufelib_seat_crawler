@@ -79,17 +79,14 @@ def output_optimize(available_seat_all):
     '''
     输出座位
     '''
-    print('name\t\t\tid\tsegment\treferer_url')
+    print('name\t\tid\tsegment')
     for floor in available_seat_all:
-        for segment in floor:
-            if segment['available_seat'] != []:
-                for seat in segment['available_seat']:
-                    print(
-                        seat['seat_name'], '\t',
-                        seat['seat_id'], '\t',
-                        seat['segment'],
-                        segment['referer_url']
-                    )
+        for seat in floor:
+            print(
+                seat['seat_name'], '\t',
+                seat['seat_id'], '\t',
+                seat['segment'],
+            )
 
 
 def book_seat(userid, segment, token, referer_url, order_id, s):
@@ -111,31 +108,19 @@ def book_seat(userid, segment, token, referer_url, order_id, s):
     print(r.json()['msg'])
 
 
-now_day = datetime.now().strftime('%Y-%m-%d')
-now_time = datetime.now().strftime('%H:%M')
-config = load_config(now_day)
-available_seat_all = []
-api_list = []
-s = requests.session()
-for i in config:
-    complete_url = i['complete_url']
-    order_id = i['order_id']
-    timeid_list = get_timeid_list(complete_url, order_id, s)
-    api_url_list = get_api_url(timeid_list, now_day, now_time)
-    api_list += api_url_list
-print("api list爬取完成")
-print(api_list)
-# loop = asyncio.get_event_loop()
-# tasks = [get_api_content(url) for url in api_list]
-# available_seat_all = loop.run_until_complete(asyncio.gather(*tasks))
-# print(available_seat_all)
-#     available_seat_list = get_available_seat(url_dict, s)
-#     available_seat_all.append(available_seat_list)
-# output_optimize(available_seat_all)
+def main():
+    api_list = get_url_list()
+    loop = asyncio.get_event_loop()
+    tasks = [get_api_content(url, segament) for url, segament in api_list]
+    available_seat_all = loop.run_until_complete(asyncio.gather(*tasks))
+    output_optimize(available_seat_all)
 
-# order_id = input('请输入您预约的id: ')
-# segment = input('请输入您预约的segment: ')
-# referer_url = input('请输入您预约的referer_url: ')
-# userid = input('请输入您的学号: ')
-# token = login_token(s, userid='202003140805' , password='300415')
-# book_seat(userid, segment, token, referer_url, order_id, s)
+    order_id = input('请输入您预约的id: ')
+    segment = input('请输入您预约的segment: ')
+    referer_url = input('请输入您预约的referer_url: ')
+    userid = input('请输入您的学号: ')
+    token = login_token(s, userid='' , password='')
+    book_seat(userid, segment, token, referer_url, order_id, s)
+
+if __name__ == '__main__':
+    main()
