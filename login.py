@@ -13,10 +13,12 @@ def get_ticker(s):
     return lt
 
 
-def get_login_api(s, username, password, lt):
+def get_login_api(username, password):
     """
     登入系统
     """
+    s = requests.session()
+    lt = get_ticker(s)
     url = 'http://ids.sdufe.edu.cn/authserver/login?service=http%3A%2F%2Flibst.sdufe.edu.cn%2Fcas%2Findex.php%3Fcallback%3Dhttp%3A%2F%2Flibst.sdufe.edu.cn%2Fhome%2Fweb%2Ff_second'
     data = {'lt': lt,
             'execution': 'e1s1',
