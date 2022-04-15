@@ -40,11 +40,11 @@ def get_login_api(username, password):
     return "http://libst.sdufe.edu.cn" + login_api
 
 
-def get_token(s, login_api):
+def get_token(login_api):
     """
     获取token
     """
-
+    s = requests.session()
     _ = s.get(login_api)
-
-    return s
+    cookies_dict = s.cookies.get_dict()
+    return cookies_dict['access_token']
