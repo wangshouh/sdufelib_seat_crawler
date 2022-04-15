@@ -89,12 +89,12 @@ def output_optimize(available_seat_all):
             )
 
 
-def book_seat(userid, segment, token, referer_url, order_id, s):
+def book_seat(userid, segment, token, order_id, s):
     '''
     预约座位
     '''
     headers = {
-        'Referer': referer_url
+        'Referer': "test"
     }
     data = {
         'access_token': token,
@@ -117,10 +117,9 @@ def main():
 
     order_id = input('请输入您预约的id: ')
     segment = input('请输入您预约的segment: ')
-    referer_url = input('请输入您预约的referer_url: ')
     userid = input('请输入您的学号: ')
-    token = login_token(s, userid='' , password='')
-    book_seat(userid, segment, token, referer_url, order_id, s)
+    token = login_token(s, userid , password)
+    book_seat(userid, segment, token, order_id, s)
 
 if __name__ == '__main__':
     main()
