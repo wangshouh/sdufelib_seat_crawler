@@ -118,6 +118,7 @@ def main():
     order_id = input('请输入您预约的id: ')
     segment = input('请输入您预约的segment: ')
     userid = input('请输入您的学号: ')
+    password = input('请输入您的密码: ')
     token = login_token(s, userid , password)
     book_seat(userid, segment, token, order_id, s)
 
