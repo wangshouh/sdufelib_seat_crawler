@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import re
 
+
 def get_ticker(s):
     """
     获取lt参数,用于登录
@@ -13,7 +14,8 @@ def get_ticker(s):
     lt = soup.find("input", attrs={'name': "lt"}).attrs['value']
     return lt
 
-def do_login(s, username, password, lt):
+
+def get_login_api(s, username, password, lt):
     """
     登入系统
     """
@@ -25,27 +27,23 @@ def do_login(s, username, password, lt):
             'password': password,
             'rmShown': '1'
             }
-    resp = BeautifulSoup(s.post(url, data=data).text, 'lxml') 
+    response = s.post(url, data=data)
+    resp = BeautifulSoup(response.text, 'lxml')
     if resp.body.a['href'] == 'http://libst.sdufe.edu.cn/home/web/f_second':
         print('登录成功')
     else:
         print('登录失败')
 
-def get_token(s):
+    redit_list = response.history
+    login_api = redit_list[len(reditList)-1].headers["location"]
+    return login_api
+
+
+def get_token(s, login_api):
     """
     获取token
     """
-    url = 'http://libst.sdufe.edu.cn/home/web/f_second'
-    resp = s.get(url)
-    token = re.findall('''(?<='access_token':\").*(?=")''', resp.text)[0]
-    return token
 
+    _ = s.get(login_api)
 
-def login_token(s, username, password):
-    """
-    登入系统
-    """
-    lt = get_ticker(s)
-    do_login(s, username, password, lt)
-    token = get_token(s)
-    return token
+    return s
