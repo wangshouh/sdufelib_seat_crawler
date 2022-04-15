@@ -38,13 +38,3 @@ def get_login_api(username, password):
     redit_list = response.history
     login_api = redit_list[len(redit_list)-1].headers["location"]
     return "http://libst.sdufe.edu.cn" + login_api
-
-
-def get_token(login_api):
-    """
-    获取token
-    """
-    s = requests.session()
-    _ = s.get(login_api)
-    cookies_dict = s.cookies.get_dict()
-    return cookies_dict['access_token']

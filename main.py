@@ -5,13 +5,13 @@ from datetime import datetime
 import aiohttp
 import requests
 
-from login import get_token
 
 def load_config():
     with open("config.json", 'r') as f:
         config_dict = json.load(f)
 
-    return config_dict    
+    return config_dict
+
 
 async def get_api_list(order_id):
     async with aiohttp.ClientSession() as session:
@@ -99,7 +99,7 @@ def book_seat(userid, segment, order_id, login_api):
     '''
     s = requests.session()
     _ = s.get(login_api)
-    token = get_token(login_api)
+    token = s.cookies.get_dict()['access_token']
     headers = {
         'Referer': "test"
     }
@@ -126,9 +126,9 @@ def main():
     userid = config_dict["username"]
     order_id = input('请输入您预约的id: ')
     segment = input('请输入您预约的segment: ')
-    login_api=config_dict['login_api']
-    token = get_token(login_api)
+    login_api = config_dict['login_api']
     book_seat(userid, segment, order_id, login_api)
+
 
 if __name__ == '__main__':
     main()
