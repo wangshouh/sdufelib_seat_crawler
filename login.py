@@ -36,8 +36,8 @@ def get_login_api(username, password):
         print('登录失败')
 
     redit_list = response.history
-    login_api = redit_list[len(reditList)-1].headers["location"]
-    return login_api
+    login_api = redit_list[len(redit_list)-1].headers["location"]
+    return "http://libst.sdufe.edu.cn" + login_api
 
 
 def get_token(s, login_api):
