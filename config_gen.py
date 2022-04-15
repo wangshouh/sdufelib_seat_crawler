@@ -12,6 +12,7 @@ order_id_list = order_id.split(',')
 login_api = get_login_api(username, password)
 with open('config.json', 'w') as f:
     config_dict = {
+        "username": username,
         "login_api": login_api,
         "order_id_list": order_id_list
     }
