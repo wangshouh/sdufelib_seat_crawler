@@ -5,8 +5,13 @@ from datetime import datetime
 import aiohttp
 import requests
 
-from login import login_token
+from login import get_token
 
+def load_config():
+    with open("config.json", 'r') as f:
+        config_dict = json.load(f)
+
+    return config_dict    
 
 async def get_api_list(order_id):
     async with aiohttp.ClientSession() as session:
@@ -25,19 +30,18 @@ async def get_api_list(order_id):
         return all_data
 
 
-def get_all_api():
-    with open("config.json", 'r') as f:
-        order_id_list = json.load(f)
+def get_all_api(config_dict):
+    order_id_list = config_dict['order_id_list']
     loop = asyncio.get_event_loop()
     tasks = [get_api_list(order_id) for order_id in order_id_list]
     time_id_list = loop.run_until_complete(asyncio.gather(*tasks))
     return time_id_list
 
 
-def get_url_list():
+def get_url_list(config_dict):
     now_day = datetime.now().strftime('%Y-%m-%d')
     now_time = datetime.now().strftime('%H:%M')
-    api_list = get_all_api()
+    api_list = get_all_api(config_dict)
     api_url_list = []
     for floor in api_list:
         for area in floor:
@@ -89,10 +93,13 @@ def output_optimize(available_seat_all):
             )
 
 
-def book_seat(userid, segment, token, order_id, s):
+def book_seat(userid, segment, order_id, login_api):
     '''
     预约座位
     '''
+    s = requests.session()
+    _ = s.get(login_api)
+    token = get_token(login_api)
     headers = {
         'Referer': "test"
     }
@@ -109,17 +116,19 @@ def book_seat(userid, segment, token, order_id, s):
 
 
 def main():
-    api_list = get_url_list()
+    config_dict = load_config()
+    api_list = get_url_list(config_dict)
     loop = asyncio.get_event_loop()
     tasks = [get_api_content(url, segament) for url, segament in api_list]
     available_seat_all = loop.run_until_complete(asyncio.gather(*tasks))
     output_optimize(available_seat_all)
 
+    userid = config_dict["username"]
     order_id = input('请输入您预约的id: ')
     segment = input('请输入您预约的segment: ')
-    userid = input('请输入您的学号: ')
-    token = login_token(s, userid , password)
-    book_seat(userid, segment, token, order_id, s)
+    login_api=config_dict['login_api']
+    token = get_token(login_api)
+    book_seat(userid, segment, order_id, login_api)
 
 if __name__ == '__main__':
     main()
