@@ -16,7 +16,7 @@ def load_config():
 async def get_api_list(order_id):
     async with aiohttp.ClientSession() as session:
         complete_url = "http://libst.sdufe.edu.cn/api.php/v3areas/" + order_id
-        async with session.get(complete_url, headers={"Referer": "test"}) as resp:
+        async with session.get(complete_url, headers={"Referer": "test", 'Host' : 'libst.sdufe.edu.cn'}) as resp:
             content = await resp.json()
             area_data = content['data']['list']['childArea']
             all_data = []
@@ -73,7 +73,7 @@ def get_available_seat(resp, segament):
 
 async def get_api_content(api_url, segament):
     async with aiohttp.ClientSession() as session:
-        async with session.get(api_url, headers={"Referer": "test"}) as resp:
+        async with session.get(api_url, headers={"Referer": "test", 'Host' : 'libst.sdufe.edu.cn'}) as resp:
             api_content = await resp.json()
             available_seat = get_available_seat(api_content, segament)
             return available_seat
@@ -98,10 +98,11 @@ def book_seat(userid, segment, order_id, login_api):
     预约座位
     '''
     s = requests.session()
-    _ = s.get(login_api)
+    _ = s.get(login_api, headers={'Host' : 'libst.sdufe.edu.cn'})
     token = s.cookies.get_dict()['access_token']
     headers = {
-        'Referer': "test"
+        'Referer': "test",
+        'Host' : 'libst.sdufe.edu.cn'
     }
     data = {
         'access_token': token,
