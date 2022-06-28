@@ -1,5 +1,45 @@
+import base64
+import hashlib
+import json
+import random
+import string
+
 import requests
 from bs4 import BeautifulSoup
+from Crypto import Random
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad
+
+BLOCK_SIZE = 16
+
+
+def generate_random_str(length):
+    """
+    生成随机字符串
+    """
+    return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(length))
+
+
+def encrypt(plain_text, key):
+    private_key = key.encode("utf-8")
+    plain_text = pad((generate_random_str(
+        64) + plain_text).encode('utf-8'), 16)
+    iv = generate_random_str(16)
+    print(iv)
+    cipher = AES.new(private_key, AES.MODE_CBC, iv.encode("utf-8"))
+    return base64.b64encode(cipher.encrypt(plain_text)).decode('utf-8')
+
+
+def get_login_params(url, s):
+    """
+    获取lt参数,用于登录
+    """
+
+    resp = s.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+    lt = soup.find("input", attrs={'id': "execution"}).attrs['value']
+    salt = soup.find("input", attrs={'id': "pwdEncryptSalt"}).attrs['value']
+    return lt, salt
 
 
 def get_ticker(s):
