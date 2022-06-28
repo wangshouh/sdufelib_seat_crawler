@@ -83,7 +83,6 @@ def get_login_api(username, password):
     }
     response = s.post(url, data=data)
     resp = BeautifulSoup(response.text, 'html.parser')
-    print(resp)
     if resp.body.a['href'] == 'http://libst.sdufe.edu.cn/home/web/f_second':
         print('登录成功')
     else:
