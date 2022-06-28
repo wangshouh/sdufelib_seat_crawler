@@ -42,34 +42,48 @@ def get_login_params(url, s):
     return lt, salt
 
 
-def get_ticker(s):
+def get_login_api(username, password):
     """
-    获取lt参数,用于登录
+    登入系统
     """
-
-    url = 'http://ids.sdufe.edu.cn/authserver/login?service=http%3A%2F%2Flibst.sdufe.edu.cn%2Fcas%2Findex.php%3Fcallback%3Dhttp%3A%2F%2Flibst.sdufe.edu.cn%2Fhome%2Fweb%2Ff_second'
-    resp = s.get(url)
-    soup = BeautifulSoup(resp.text, 'lxml')
-    lt = soup.find("input", attrs={'name': "lt"}).attrs['value']
-    return lt
 
 
 def get_login_api(username, password):
     """
     登入系统
     """
+    url = "http://ids.sdufe.edu.cn/authserver/login?service=http%3A%2F%2Flibst.sdufe.edu.cn%2Fcas%2Findex.php%3Fcallback%3Dhttp%3A%2F%2Flibst.sdufe.edu.cn%2Fhome%2Fweb%2Ff_second"
+
+    headers = {
+        'Host': 'ids.sdufe.edu.cn',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:101.0) Gecko/20100101 Firefox/101.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en,en-US;q=0.8,zh-CN;q=0.7,zh;q=0.5,zh-TW;q=0.3,zh-HK;q=0.2',
+        'Origin': 'http://ids.sdufe.edu.cn',
+        'DNT': '1',
+        'Referer': 'http://ids.sdufe.edu.cn/authserver/login?service=http%3A%2F%2Flibst.sdufe.edu.cn%2Fcas%2Findex.php%3Fcallback%3Dhttp%3A%2F%2Flibst.sdufe.edu.cn%2Fhome%2Fweb%2Ff_second',
+        'Upgrade-Insecure-Requests': '1',
+        'Content-Type': 'application/x-www-form-urlencoded',
+    }
     s = requests.session()
-    lt = get_ticker(s)
-    url = 'http://ids.sdufe.edu.cn/authserver/login?service=http%3A%2F%2Flibst.sdufe.edu.cn%2Fcas%2Findex.php%3Fcallback%3Dhttp%3A%2F%2Flibst.sdufe.edu.cn%2Fhome%2Fweb%2Ff_second'
-    data = {'lt': lt,
-            'execution': 'e1s1',
-            '_eventId': 'submit',
-            'username': username,
-            'password': password,
-            'rmShown': '1'
-            }
+    execution, salt = get_login_params(url, s)
+    print(salt)
+    password = encrypt(password, salt)
+    print(password)
+
+    data = {
+        'lt': '',
+        '_eventId': 'submit',
+        'username': username,
+        'password': password,
+        "captcha": "",
+        "execution": execution,
+        "cllt": "userNameLogin",
+        "dllt": "generalLogin"
+    }
     response = s.post(url, data=data)
-    resp = BeautifulSoup(response.text, 'lxml')
+    resp = BeautifulSoup(response.text, 'html.parser')
+    print(resp)
     if resp.body.a['href'] == 'http://libst.sdufe.edu.cn/home/web/f_second':
         print('登录成功')
     else:
